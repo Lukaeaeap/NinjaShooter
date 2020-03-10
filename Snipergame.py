@@ -11,7 +11,7 @@ Y = SCREEN_HEIGHT/2
 SCREEN_TITLE = "Ninja sniper"
 WALK_RANGE_X = 200
 WALK_RANGE_Y = 80
-WALK_SPEED = 1
+WALK_SPEED = 2
 
 
 def calculate_disctance(x, y, x2, y2):  # calculate the distance between two point using pytachoras
@@ -56,6 +56,8 @@ class Enemy:
 
         if self.randx > self.position_x:
             self.position_x += self.change_x
+        elif self.randx < self.position_x:
+            self.position_x -= self.change_x
         elif self.randy > self.position_y:
             self.position_y += self.change_y
         elif self.randy < self.position_y:
@@ -118,9 +120,9 @@ class MyGame(arcade.Window):
         self.RIGHT = False
         self.MOUSCLICKRIGHT = False
         self.shoot = False
+        self.gundamage = 50
         self.RANDX = 0
         self.RANDY = 0
-        self.gundamage = 50
 
         self.scope = Crosshair(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, X, Y, 5, 5, arcade.color.RED)
 
@@ -134,6 +136,9 @@ class MyGame(arcade.Window):
         self.shooting_textures = []
         self.shooting = False
         self.shooting_time = 0
+        for enemy in self.enemy_list:
+            self.RANDX = enemy.position_x
+            self.RANDY = enemy.position_y
 
         for i in range(5):
             self.shooting_textures.append(arcade.load_texture("Snipergame/Snipersprites/Sniperspritesheet.png",
@@ -166,7 +171,7 @@ class MyGame(arcade.Window):
         for enemy in self.enemy_list:
             if enemy.position_x > SCREEN_WIDTH-200:
                 arcade.draw_text(f"Game Over", CENTERSCREEN_X, CENTERSCREEN_Y, arcade.color.WHITE, 30, font_name="Snipergame/Minecraft.ttf")
-                self.enemy_list.remove(enemy)
+                WALKSPEED = 0
 
     def on_update(self, delta_time):
         """ Update every class every. """
@@ -267,6 +272,7 @@ def main():
 
 if __name__ == "__main__":
     main()
+
 
 """
 Made by Luuk Hoekstra (2003)
