@@ -40,19 +40,17 @@ class Enemy:
 
     def draw(self):
         """ Tell to our Enemy class how it should draw it. """
-        """ only for hitbox showing """  # arcade.draw_circle_filled(self.position_x, self.position_y, self.radius, self.color)
-        arcade.draw_text(f"HP: {self.hp}", self.position_x, self.position_y+30, arcade.color.BLACK, 10)
+        # arcade.draw_circle_filled(self.position_x, self.position_y, self.radius, self.color) # Draw the hitbox of the ninja enemy
+        arcade.draw_text(f"HP: {self.hp}", self.position_x-5, self.position_y+30, arcade.color.BLACK, 10, font_name="Snipergame/Minecraft.ttf")
         self.dude.draw()
 
     def update(self, delta_time, scope):
         """ Tell to our Enemy class how it should update it. """
-        if self.randx+5 >= self.position_x and self.randx-5 <= self.position_x:
-            if self.randy+5 >= self.position_y and self.randy-5 <= self.position_y:
+        if self.randx+50 >= self.position_x and self.randx-50 <= self.position_x:
+            if self.randy+50 >= self.position_y and self.randy-50 <= self.position_y:
                 self.randx = (random.randrange(WALK_RANGE_X))+self.position_x
                 self.randy = (random.randrange(-WALK_RANGE_Y, WALK_RANGE_Y))+self.position_y
 
-        while self.randx > SCREEN_WIDTH-self.radius or self.randx < 0+self.radius:
-            self.randx = (random.randrange(WALK_RANGE_X))+self.position_x
         while self.randy > SCREEN_HEIGHT-self.radius or self.randy < 0+self.radius:
             self.randy = (random.randrange(-WALK_RANGE_Y, WALK_RANGE_Y))+self.position_y
 
@@ -162,9 +160,13 @@ class MyGame(arcade.Window):
         for enemy in self.enemy_list:
             enemy.draw()
         self.scope.draw()
-        arcade.draw_text(f"Wave: {self.wave}", 10, 50, arcade.color.BLACK, 20)
-        arcade.draw_text(f"Kills: {self.score}", 10, 20, arcade.color.BLACK, 20)
+        arcade.draw_text(f"Wave: {self.wave}", 10, 50, arcade.color.BLACK, 20, font_name="Snipergame/Minecraft.ttf")
+        arcade.draw_text(f"Kills: {self.score}", 10, 20, arcade.color.BLACK, 20, font_name="Snipergame/Minecraft.ttf")
         self.player_list.draw()
+        for enemy in self.enemy_list:
+            if enemy.position_x > SCREEN_WIDTH-200:
+                arcade.draw_text(f"Game Over", CENTERSCREEN_X, CENTERSCREEN_Y, arcade.color.WHITE, 30, font_name="Snipergame/Minecraft.ttf")
+                self.enemy_list.remove(enemy)
 
     def on_update(self, delta_time):
         """ Update every class every. """
