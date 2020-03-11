@@ -9,8 +9,8 @@ CENTERSCREEN_Y = SCREEN_HEIGHT/2
 X = SCREEN_WIDTH/2
 Y = SCREEN_HEIGHT/2
 SCREEN_TITLE = "Ninja sniper"
-WALK_RANGE_X = 200
-WALK_RANGE_Y = 80
+WALK_RANGE_X = 100
+WALK_RANGE_Y = 40
 WALK_SPEED = 2
 
 
@@ -26,14 +26,14 @@ class Enemy:
     def __init__(self, position_x, position_y, change_x, change_y, radius, color, randx, randy, hp):
         """ Take the parameters out of the Enemy class, and create instance variables with the parameters. """
         # Take the parameters of the init function above, and create instance variables out of them.
-        self.position_x = position_x
-        self.position_y = position_y
+        self.position_x = -100
+        self.position_y = SCREEN_HEIGHT//2
         self.change_x = change_x
         self.change_y = change_y
         self.radius = radius
         self.color = color
-        self.randx = randx
-        self.randy = randy
+        self.randx = 100
+        self.randy = SCREEN_HEIGHT//2
         self.hp = hp
 
         self.dude = arcade.Sprite("Snipergame/Snipersprites/Ninja.png", 0.5)
@@ -46,13 +46,22 @@ class Enemy:
 
     def update(self, delta_time, scope):
         """ Tell to our Enemy class how it should update it. """
-        if self.randx+50 >= self.position_x and self.randx-50 <= self.position_x:
-            if self.randy+50 >= self.position_y and self.randy-50 <= self.position_y:
-                self.randx = (random.randrange(WALK_RANGE_X))+self.position_x
-                self.randy = (random.randrange(-WALK_RANGE_Y, WALK_RANGE_Y))+self.position_y
 
-        while self.randy > SCREEN_HEIGHT-self.radius or self.randy < 0+self.radius:
-            self.randy = (random.randrange(-WALK_RANGE_Y, WALK_RANGE_Y))+self.position_y
+        if self.position_x - self.change_x >= self.randx and self.position_x + self.change_x <= self.randx:
+            self.randx = random.randrange(WALK_RANGE_X)+self.position_x
+        """"
+        if self.randx+50 >= self.position_x and self.randx-50 <= self.position_x:  # if the x position of the enemy is the same as the x position of the random generated x, generate a new one
+            self.randx = (random.randrange(WALK_RANGE_X))+self.position_x
+        if self.randy+50 >= self.position_y and self.randy-50 <= self.position_y:  # if the y position of the enemy is the same as the y position of the random generated y, generate a new one
+            while self.randy < SCREEN_HEIGHT-self.radius or self.randy > 0+self.radius:
+                self.randy = (random.randrange(-WALK_RANGE_Y, WALK_RANGE_Y))+self.position_y
+        """
+
+        # if self.randx == self.position_x:
+        #     self.randx = (random.randrange(WALK_RANGE_X))*2+self.position_x
+        if self.randy == self.position_y:
+            while self.randy < SCREEN_HEIGHT-self.radius or self.randy > 0+self.radius:
+                self.randy = (random.randrange(-WALK_RANGE_Y, WALK_RANGE_Y))*2+self.position_y
 
         if self.randx > self.position_x:
             self.position_x += self.change_x
@@ -122,9 +131,9 @@ class MyGame(arcade.Window):
         self.shoot = False
         self.gundamage = 50
         self.RANDX = 0
-        self.RANDY = 0
+        self.RANDY = SCREEN_HEIGHT//2
 
-        self.scope = Crosshair(SCREEN_WIDTH/2, SCREEN_HEIGHT/2, X, Y, 5, 5, arcade.color.RED)
+        self.scope = Crosshair(SCREEN_WIDTH//2, SCREEN_HEIGHT//2, X, Y, 5, 5, arcade.color.RED)
 
     def setup(self):
         print("Let's play ninja sniper")
@@ -186,8 +195,8 @@ class MyGame(arcade.Window):
         if Enemy_list_length == 0:
             self.wave += 1
             for i in range(self.wavelength):
-                self.enemy_list.append(Enemy((random.randrange(-200, 200)),
-                                             (random.randrange(0, SCREEN_HEIGHT)),
+                self.enemy_list.append(Enemy((random.randrange(0, 200))*-1,
+                                             (random.randrange(SCREEN_HEIGHT)),
                                              WALK_SPEED, WALK_SPEED, 25,
                                              arcade.color.BLACK, self.RANDX, self.RANDY, 100))
             self.wavelength += 1
