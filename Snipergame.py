@@ -14,7 +14,7 @@ WALK_RANGE_Y = 40
 WALK_SPEED = 2
 
 
-def calculate_disctance(x, y, x2, y2):  # calculate the distance between two point using pytachoras
+def calculate_distance(x, y, x2, y2):  # calculate the distance between two point using pytachoras
     # Difference in x and y
     x_diff = abs(x - x2)
     y_diff = abs(y - y2)
@@ -36,19 +36,21 @@ class Enemy:
         self.randy = SCREEN_HEIGHT//2
         self.hp = hp
 
-        self.dude = arcade.Sprite("Snipergame/Snipersprites/Ninja.png", 0.5)
+        self.dude = arcade.Sprite("Snipersprites/Ninja.png", 0.5)
 
     def draw(self):
         """ Tell to our Enemy class how it should draw it. """
         # arcade.draw_circle_filled(self.position_x, self.position_y, self.radius, self.color) # Draw the hitbox of the ninja enemy
-        arcade.draw_text(f"HP: {self.hp}", self.position_x-5, self.position_y+30, arcade.color.BLACK, 10, font_name="Snipergame/Minecraft.ttf")
+        arcade.draw_text(f"HP: {self.hp}", self.position_x-5, self.position_y+30, arcade.color.BLACK, 10, font_name="Minecraft.ttf")
         self.dude.draw()
 
     def update(self, delta_time, scope):
         """ Tell to our Enemy class how it should update it. """
-
-        if self.position_x - self.change_x >= self.randx and self.position_x + self.change_x <= self.randx:
+        if calculate_distance(self.position_x, self.position_y, self.randx, self.randy) <= self.radius:
             self.randx = random.randrange(WALK_RANGE_X)+self.position_x
+
+        # if self.position_x - self.change_x >= self.randx and self.position_x + self.change_x <= self.randx:
+        #     self.randx = random.randrange(WALK_RANGE_X)+self.position_x
         """"
         if self.randx+50 >= self.position_x and self.randx-50 <= self.position_x:  # if the x position of the enemy is the same as the x position of the random generated x, generate a new one
             self.randx = (random.randrange(WALK_RANGE_X))+self.position_x
@@ -59,9 +61,9 @@ class Enemy:
 
         # if self.randx == self.position_x:
         #     self.randx = (random.randrange(WALK_RANGE_X))*2+self.position_x
-        if self.randy == self.position_y:
-            while self.randy < SCREEN_HEIGHT-self.radius or self.randy > 0+self.radius:
-                self.randy = (random.randrange(-WALK_RANGE_Y, WALK_RANGE_Y))*2+self.position_y
+        # if self.randy == self.position_y:
+        #     while self.randy < SCREEN_HEIGHT-self.radius or self.randy > 0+self.radius:
+        #         self.randy = (random.randrange(-WALK_RANGE_Y, WALK_RANGE_Y))*2+self.position_y
 
         if self.randx > self.position_x:
             self.position_x += self.change_x
@@ -90,8 +92,8 @@ class Crosshair():
         self.height = height
         self.color = color
 
-        self.scope = arcade.Sprite("Snipergame/Snipersprites/Crosshair124bit.PNG", 0.5)
-        #self.sniper = arcade.Sprite("Snipergame/Snipersprites/Sniper1.png", 1)
+        self.scope = arcade.Sprite("Snipersprites/Crosshair124bit.PNG", 0.5)
+        #self.sniper = arcade.Sprite("Snipersprites/Sniper1.png", 1)
         #self.sniper.center_x = SCREEN_WIDTH/2
         #self.sniper.center_y = SCREEN_HEIGHT/2
 
@@ -150,9 +152,9 @@ class MyGame(arcade.Window):
             self.RANDY = enemy.position_y
 
         for i in range(5):
-            self.shooting_textures.append(arcade.load_texture("Snipergame/Snipersprites/Sniperspritesheet.png",
+            self.shooting_textures.append(arcade.load_texture("Snipersprites/Sniperspritesheet.png",
                                                               x=i*192, y=0, width=192, height=382))
-        self.base_texture = arcade.load_texture("Snipergame/Snipersprites/Sniperspritesheet.png", x=0, y=0, width=192, height=382)
+        self.base_texture = arcade.load_texture("Snipersprites/Sniperspritesheet.png", x=0, y=0, width=192, height=382)
         self.player.textures = [self.base_texture]
 
         self.player.center_x = SCREEN_WIDTH-(192/2)
@@ -171,21 +173,27 @@ class MyGame(arcade.Window):
     def on_draw(self):
         """ Called whenever we need to draw the window, and draw the classes. """
         arcade.start_render()
+
         for enemy in self.enemy_list:
             enemy.draw()
+
         self.scope.draw()
-        arcade.draw_text(f"Wave: {self.wave}", 10, 50, arcade.color.BLACK, 20, font_name="Snipergame/Minecraft.ttf")
-        arcade.draw_text(f"Kills: {self.score}", 10, 20, arcade.color.BLACK, 20, font_name="Snipergame/Minecraft.ttf")
+
+        arcade.draw_text(f"Wave: {self.wave}", 10, 50, arcade.color.BLACK, 20, font_name="Minecraft.ttf")
+        arcade.draw_text(f"Kills: {self.score}", 10, 20, arcade.color.BLACK, 20, font_name="Minecraft.ttf")
+
         self.player_list.draw()
+
         for enemy in self.enemy_list:
             if enemy.position_x > SCREEN_WIDTH-200:
-                arcade.draw_text(f"Game Over", CENTERSCREEN_X, CENTERSCREEN_Y, arcade.color.WHITE, 30, font_name="Snipergame/Minecraft.ttf")
+                arcade.draw_text(f"Game Over", CENTERSCREEN_X, CENTERSCREEN_Y, arcade.color.WHITE, 30, font_name="Minecraft.ttf")
                 WALKSPEED = 0
 
     def on_update(self, delta_time):
         """ Update every class every. """
         for enemy in self.enemy_list:
             enemy.update(delta_time, self.scope)
+
         self.scope.update(delta_time, self.LEFT, self.RIGHT)
         self.player.update()
 
@@ -259,7 +267,7 @@ class MyGame(arcade.Window):
             self.scope.color = arcade.color.BLACK
             for enemy in self.enemy_list:  # loop over ememy's
                 # print(type(enemy))
-                if calculate_disctance(x, y, enemy.position_x, enemy.position_y) <= enemy.radius:
+                if calculate_distance(x, y, enemy.position_x, enemy.position_y) <= enemy.radius:
                     # enemy hit
                     enemy.hp -= self.gundamage
                     print(enemy.hp)
